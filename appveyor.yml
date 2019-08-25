@@ -1,7 +1,7 @@
 environment:
   global:
     TEST_VAR: "kaboom"
-script:
+install:
   - ps: bash .\test.sh
   - ps: source .\test.sh
   - bash: source .\test.sh
