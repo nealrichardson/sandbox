@@ -2,4 +2,6 @@ environment:
   global:
     TEST_VAR: "kaboom"
 install:
-  - ps: bash test.sh
+  - mkdir tmp
+  - cd tmp
+  - ps: bash ../test.sh
