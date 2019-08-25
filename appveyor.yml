@@ -2,7 +2,7 @@ environment:
   global:
     TEST_VAR: "kaboom"
 install:
-  - ps: bash test.sh
-  - bash: source test.sh
+  - bash: test.sh
   - source test.sh
   - sh: source test.sh
+  - ps: bash test.sh
