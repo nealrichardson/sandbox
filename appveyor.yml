@@ -1,7 +1,2 @@
-environment:
-  global:
-    TEST_VAR: "kaboom"
-install:
-  - mkdir tmp
-  - cd tmp
-  - ps: bash ../test.sh
+build_script:
+  - ps: bash test.sh
