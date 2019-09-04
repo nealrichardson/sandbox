@@ -1,8 +1,6 @@
 language: generic
 dist: xenial
-addons:
-  apt:
-    packages:
-    - hub
+before_script:
+- snap install hub --classic
 script:
-  - hub pull-request -m "testing PR"
+- hub pull-request -m "testing PR"
