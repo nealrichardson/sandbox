@@ -1,6 +1,6 @@
 language: generic
 dist: xenial
 before_script:
-- snap install hub --classic
+- sudo snap install hub --classic
 script:
 - hub pull-request -m "testing PR"
