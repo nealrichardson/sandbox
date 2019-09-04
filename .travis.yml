@@ -1,0 +1,5 @@
+addons:
+  apt:
+    - hub
+script:
+  - hub pull-request -m "testing PR"
