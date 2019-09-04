@@ -2,6 +2,7 @@ language: generic
 dist: xenial
 addons:
   apt:
+    packages:
     - hub
 script:
   - hub pull-request -m "testing PR"
