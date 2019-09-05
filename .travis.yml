@@ -1,0 +1,9 @@
+language: generic
+dist: xenial
+before_script:
+- sudo snap install hub --classic
+script:
+- source hub.sh
+env:
+  global:
+    secure: q9i7pHiIH3Nrkb1Vs3wr79OZWbFRnCXaaSzG6UUqUhuc+jLLX/Px5F+mgVWfDBrBantYgjXaQVSOT+LKA15SY68ZJfy7ojz0tIlebny0pB+hKWTz4hYylXykvEWXG+DcFYuMl7OeWtxIIL/n8BOlvZJe2LG0pMMrxu2TrJk57Mmx2py6ExFJvUEzapIlKp+CwVQCUsvuK7WKjX8k7GP+PmiR0aIOfMJi+tP0M/91ed1SPvnkacJiQDcqC9GSUhSe2rmKXE+5ezfLJpisYV/jYfNRTL3mwvPvfY9lGuPzQ3Dbqnd6Y5n/t6DwAYSemS7zeBwiyks3I95zsy/coK0FaGbPCl9yI/nTCZaZrNbJCP58EhLos9zNJGz1RISy6GXF7jXs54+qXnX+z/1peP3aQ6JLDfXZNumwsBloMb0oCAS4ldPgdS7KTiymAU7OI9aLsXJbvdGq0OYv59/UfkSuZN2v+3Af3OqFenY8iHvkZOh5TJ2/VOZNPNBiwdTjxAmcAhG2YGg5xmiPTFp+0eIdE1NCE0puSxpnMjAHf7A37widsVydJn/m4Fkzti9pR01SyFQg3RCDBKHa/LTxuEwbpQppLdlXFGHjg1p4v1CtjNe/hqKRdiJ9ucEDWxAfH4JRBiTg+3lQL5yMxWC+GLgCoCbylMmOli27l3vrpdwtOiQ=
