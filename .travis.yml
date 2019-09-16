@@ -1,11 +1,12 @@
 language: r
 cache: packages
-dist: xenial
+os: osx
 env:
   INCLUDE_DIR: "$TRAVIS_BUILD_DIR/arrow/r/pyarrow/include"
   LIB_DIR: "$TRAVIS_BUILD_DIR/arrow/r/pyarrow"
+  TEST_R_WITH_ARROW: "TRUE"
 before_install:
-- git clone --depth=1 https://github.com/apache/arrow.git
+- git clone --depth=1 https://github.com/nealrichardson/arrow.git -b 0.14.1.1-rpkg
 - cd arrow/r
-- wget https://files.pythonhosted.org/packages/a9/8d/42273b4a817f3bf6edfe38164172ef9453dd4b3ec84b500b2222429b2143/pyarrow-0.14.1-cp27-cp27m-manylinux1_x86_64.whl
+- curl https://files.pythonhosted.org/packages/cf/ee/2d080332317dc9b49dda2b24fec084537360c72056856f47cabf0ca875b1/pyarrow-0.14.1-cp27-cp27m-macosx_10_6_intel.whl
 - unzip *.whl
