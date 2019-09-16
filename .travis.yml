@@ -1,0 +1,11 @@
+language: r
+cache: packages
+dist: xenial
+env:
+  INCLUDE_DIR: "$TRAVIS_BUILD_DIR/arrow/r/pyarrow/include"
+  LIB_DIR: "$TRAVIS_BUILD_DIR/arrow/r/pyarrow"
+before_install:
+- git clone --depth=1 https://github.com/apache/arrow.git
+- cd arrow/r
+- wget https://files.pythonhosted.org/packages/a9/8d/42273b4a817f3bf6edfe38164172ef9453dd4b3ec84b500b2222429b2143/pyarrow-0.14.1-cp27-cp27m-manylinux1_x86_64.whl
+- unzip *.whl
