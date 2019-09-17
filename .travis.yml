@@ -7,7 +7,7 @@ env:
   ARROW_USE_OLD_CXXABI: 1
 before_install:
 - echo 'options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' >> ~/.Rprofile.site
-- wget https://files.pythonhosted.org/packages/7c/a5/5e1edbe3cc3487279828cf201793b16f7392493c8e68fe8bafc018829709/pyarrow-0.14.1-cp27-cp27mu-manylinux1_x86_64.whl
+- wget https://files.pythonhosted.org/packages/e7/6c/fc63aefdc257cc107106a288621142c7e7787f2bb207f6bcb73508086f2b/pyarrow-0.14.1-cp27-cp27m-manylinux2010_x86_64.whl
 - unzip *.whl
 - git clone --depth=1 https://github.com/nealrichardson/arrow.git -b 0.14.1.1-rpkg
 - cd arrow/r
