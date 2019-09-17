@@ -2,11 +2,12 @@ language: r
 cache: packages
 dist: xenial
 env:
-  INCLUDE_DIR: "$TRAVIS_BUILD_DIR/pyarrow/include"
-  LIB_DIR: "$TRAVIS_BUILD_DIR/pyarrow"
   TEST_R_WITH_ARROW: "TRUE"
 before_install:
 - wget https://files.pythonhosted.org/packages/e7/6c/fc63aefdc257cc107106a288621142c7e7787f2bb207f6bcb73508086f2b/pyarrow-0.14.1-cp27-cp27m-manylinux2010_x86_64.whl
 - unzip *.whl
 - git clone --depth=1 https://github.com/nealrichardson/arrow.git -b 0.14.1.1-rpkg
 - cd arrow/r
+before_script:
+- export INCLUDE_DIR=$TRAVIS_BUILD_DIR/pyarrow/include
+- export LIB_DIR=$TRAVIS_BUILD_DIR/pyarrow
