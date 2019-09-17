@@ -11,3 +11,4 @@ before_install:
 before_script:
 - export INCLUDE_DIR=$TRAVIS_BUILD_DIR/pyarrow/include
 - export LIB_DIR=$TRAVIS_BUILD_DIR/pyarrow
+- export R_LD_LIBRARY_PATH=$LIB_DIR
