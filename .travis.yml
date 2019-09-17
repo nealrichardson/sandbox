@@ -16,4 +16,4 @@ before_script:
 - export LIB_DIR=$TRAVIS_BUILD_DIR/pyarrow
 - export LD_LIBRARY_PATH=$LIB_DIR
 script:
-- R -e 'devtools::test(reporter="summary")'
+- R -e 'install.packages("devtools"); devtools::test(reporter="summary")'
