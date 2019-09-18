@@ -8,6 +8,7 @@ env:
 before_install:
 # Set this in .Rprofile for RSPM binary packages
 - echo 'options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' >> ~/.Rprofile.site
+- sudo apt-get install -y gdb
 # Download wheel
 - wget https://github.com/ursa-labs/crossbow/releases/download/nightly-2019-09-18-0-travis-wheel-manylinux2010-cp27mu/pyarrow-0.14.0.dev572-cp27-cp27mu-manylinux2010_x86_64.whl
 - unzip *.whl
