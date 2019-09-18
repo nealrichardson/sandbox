@@ -6,10 +6,12 @@ env:
   TEST_R_WITH_ARROW: "TRUE"
   ARROW_USE_OLD_CXXABI: 1
 before_install:
+# Set this in .Rprofile for RSPM binary packages
 - echo 'options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' >> ~/.Rprofile.site
-- wget https://files.pythonhosted.org/packages/e7/6c/fc63aefdc257cc107106a288621142c7e7787f2bb207f6bcb73508086f2b/pyarrow-0.14.1-cp27-cp27m-manylinux2010_x86_64.whl
+# Download wheel
+- wget https://github.com/ursa-labs/crossbow/releases/download/nightly-2019-09-18-0-travis-wheel-manylinux2010-cp27mu/pyarrow-0.14.0.dev572-cp27-cp27mu-manylinux2010_x86_64.whl
 - unzip *.whl
-- git clone --depth=1 https://github.com/nealrichardson/arrow.git -b wheel-debug
+- git clone --depth=1 https://github.com/apache/arrow.git
 - cd arrow/r
 before_script:
 - export INCLUDE_DIR=$TRAVIS_BUILD_DIR/pyarrow/include
