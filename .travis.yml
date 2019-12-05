@@ -11,7 +11,8 @@ before_install:
 # Download wheel
 - wget https://dl.bintray.com/nealrichardson/pyarrow-dev/pyarrow-0.15.1.dev392+g1f7e7f852.d20191205-cp37-cp37m-manylinux2014_x86_64.whl
 - unzip *.whl
-- git clone --depth=1 https://github.com/apache/arrow.git
+# Clone arrow and checkout the same commit as where the wheel was made
+- git clone https://github.com/apache/arrow.git && git checkout 1f7e7f852baf01f335be45fca8cc2c5f3f0f2d01
 - cd arrow/r
 before_script:
 - export INCLUDE_DIR=$TRAVIS_BUILD_DIR/pyarrow/include
