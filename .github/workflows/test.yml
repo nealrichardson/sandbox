@@ -16,8 +16,11 @@ jobs:
         echo Hello, world!
         pwd
         ls -alh
+        echo "var1 is $VAR1"
+        echo "::set-env name=VAR1::foo"
+        echo "var1 is $VAR1"
         VAR1=foo
-        export VAR2=bar
+        echo "var1 is $VAR1"
         mkdir bang
         # ! gets escaped so !$ doesn't work
         # cd !$
@@ -28,5 +31,5 @@ jobs:
         set -x
         echo Step 2
         pwd
+        ls
         echo "var1 is $VAR1"
-        echo "var2 is $VAR2"
