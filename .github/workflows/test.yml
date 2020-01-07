@@ -19,7 +19,9 @@ jobs:
         VAR1=foo
         export VAR2=bar
         mkdir bang
-        cd !$
+        # ! gets escaped so !$ doesn't work
+        # cd !$
+        cd bang
         pwd
     - name: See what remains
       run: |
