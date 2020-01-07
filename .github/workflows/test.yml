@@ -16,11 +16,9 @@ jobs:
         echo Hello, world!
         pwd
         ls -alh
-        echo "var1 is $VAR1"
-        echo "::set-env name=VAR1::foo"
-        echo "var1 is $VAR1"
         VAR1=foo
         echo "var1 is $VAR1"
+        echo "::set-env name=VAR1::${VAR1}"
         mkdir bang
         # ! gets escaped so !$ doesn't work
         # cd !$
@@ -31,5 +29,7 @@ jobs:
         set -x
         echo Step 2
         pwd
+        # cd not preserved
         ls
+        # but the dir created is
         echo "var1 is $VAR1"
