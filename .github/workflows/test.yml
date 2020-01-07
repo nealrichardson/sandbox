@@ -1,0 +1,27 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: See what we have, set an env var
+      run: |
+        echo Hello, world!
+        pwd
+        ls -alh
+        VAR1=foo
+        export VAR2=bar
+        mkdir bang
+        cd !$
+        pwd
+    - name: See what remains
+      run: |
+        echo Step 2
+        pwd
+        echo "var1 is $VAR1"
+        echo "var2 is $VAR2"
