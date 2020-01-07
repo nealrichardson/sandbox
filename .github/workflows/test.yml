@@ -1,4 +1,4 @@
-name: CI
+name: Test
 
 on: [push]
 
@@ -10,7 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: See what we have, set an env var
+      shell: bash
       run: |
+        set -x
         echo Hello, world!
         pwd
         ls -alh
@@ -21,6 +23,7 @@ jobs:
         pwd
     - name: See what remains
       run: |
+        set -x
         echo Step 2
         pwd
         echo "var1 is $VAR1"
