@@ -24,9 +24,7 @@ env:
     - ARROW_FORMULA=./arrow/dev/tasks/homebrew-formulae/apache-arrow.rb
 
 before_script:
-- git clone --no-checkout https://github.com/apache/arrow arrow
-- git -C arrow fetch -t https://github.com/apache/arrow refs/pull/6140/merge
-- if [ $CROSSBOW_USE_COMMIT_ID = true ]; then git -C arrow checkout 65d2da3847ae81f42cb6211229be7d9c9bfaf6cc; else git -C arrow checkout FETCH_HEAD; fi
+- git clone https://github.com/apache/arrow arrow
 - brew --version
 - brew update
 - brew --version
