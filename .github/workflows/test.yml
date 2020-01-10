@@ -10,9 +10,9 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: See what we have, set an env var
-      shell: bash
       run: |
         set -x
+        sudo bash
         echo Hello, world!
         pwd
         ls -alh
