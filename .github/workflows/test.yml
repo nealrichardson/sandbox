@@ -12,7 +12,9 @@ jobs:
     - name: See what we have, set an env var
       run: |
         set -x
+        whoami
         sudo bash
+        whoami
         echo Hello, world!
         pwd
         ls -alh
