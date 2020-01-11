@@ -12,26 +12,10 @@ jobs:
     - name: See what we have, set an env var
       run: |
         set -x
-        whoami
-        sudo bash
-        whoami
-        echo Hello, world!
-        pwd
-        ls -alh
+        echo Round 1
+        echo printenv > test.sh
+        sudo -E bash test.sh
+        echo Round 2
         VAR1=foo
-        echo "var1 is $VAR1"
-        echo "::set-env name=VAR1::${VAR1}"
-        mkdir bang
-        # ! gets escaped so !$ doesn't work
-        # cd !$
-        cd bang
-        pwd
-    - name: See what remains
-      run: |
-        set -x
-        echo Step 2
-        pwd
-        # cd not preserved
-        ls
-        # but the dir created is
-        echo "var1 is $VAR1"
+        export VAR2=bar
+        sudo -E bash test.sh
