@@ -17,4 +17,6 @@ ls
 
 find . -name "*.md"
 
+ls | grep -e "\.md"
+
 ls "*.md"
