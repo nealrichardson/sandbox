@@ -13,5 +13,6 @@ shopt -s globstar
 
 shopt
 
-
-ls *.md
+find . -name .md
+V='*.md'
+ls $V
