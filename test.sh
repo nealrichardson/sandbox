@@ -13,6 +13,8 @@ shopt -s globstar
 
 shopt
 
+ls
+
 find . -name "*.md"
 
 ls "*.md"
