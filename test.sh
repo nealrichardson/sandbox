@@ -2,7 +2,7 @@
 
 set -x
 
-shopt -s direxpand
+shopt -s extglob
 
 shopt
 
