@@ -2,6 +2,9 @@
 
 set -x
 
+bash --version
+
+shopt -u complete_fullquote
 shopt -s extglob
 
 shopt
