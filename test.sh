@@ -10,6 +10,7 @@ bash --version
 # shopt -s globasciiranges
 # shopt -s globstar
 
+cat /etc/makepkg.conf
 
 shopt
 
