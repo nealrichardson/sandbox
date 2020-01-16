@@ -15,10 +15,19 @@ shopt
 
 cd $APPVEYOR_BUILD_FOLDER
 
-ls
+touch file2.md
 
+ls
 find . -name "*.md"
 
 ls | grep -e "\.md"
 
-ls "*.md"
+mkdir test
+
+find . -name "*.md" | xargs -I{} cp {} test/
+ls test
+
+cd test
+ls
+rm *.md
+find . -name "*.md" | rm
