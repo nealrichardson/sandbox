@@ -23,11 +23,12 @@ find . -name "*.md"
 ls | grep -e "\.md"
 
 mkdir test
+cp *.md test
 
-find . -name "*.md" | xargs -I{} cp {} test/
+# find . -name "*.md" | xargs -I{} cp {} test/
 ls test
 
 cd test
 ls
 rm *.md
-find . -name "*.md" | rm
+ls
