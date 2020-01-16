@@ -13,6 +13,8 @@ shopt -s globstar
 
 shopt
 
+cd $APPVEYOR_BUILD_FOLDER
+
 ls
 
 find . -name "*.md"
