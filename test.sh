@@ -13,7 +13,6 @@ shopt -s globstar
 
 shopt
 
-find . -name *.md
+find . -name "*.md"
 
-export QUOTING_STYLE=literal
-ls *.md
+ls "*.md"
