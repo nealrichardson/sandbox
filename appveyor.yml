@@ -1,4 +1,0 @@
-init:
-  ps: $ErrorActionPreference = "Stop"
-build_script:
-  - cmd: bash test.sh
