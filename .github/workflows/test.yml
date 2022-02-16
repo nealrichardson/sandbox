@@ -29,3 +29,16 @@ jobs:
         run: |
           which pacman
           pacman -V
+  fixed:
+    name: On my fork
+    runs-on: windows-latest
+    steps:
+      - uses: nealrichardson/actions/setup-r@rtools-path
+        with:
+          r-version: "4.1"
+          rtools-version: 40
+      - name: Find pacman
+        shell: bash
+        run: |
+          which pacman
+          pacman -V
