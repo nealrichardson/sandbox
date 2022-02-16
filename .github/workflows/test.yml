@@ -9,9 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        actions-version:
-        - master
-        - v2
+        actions-version: [master, v2]
     steps:
       - uses: r-lib/actions/setup-r@${{ matrix.actions-version }}
         with:
