@@ -18,10 +18,10 @@ jobs:
         
         - name: Test
           run: 
-            # cat $TOP_SECRET_FILE
-            # cat test.txt
+            cat "$TOP_SECRET_FILE" | true
+            cat test.txt
             ls -lh test.txt
-            ls -lh $TOP_SECRET_FILE
+            ls -lh "$TOP_SECRET_FILE" | true
         
         - name: Run docker compose
           run: docker compose up
