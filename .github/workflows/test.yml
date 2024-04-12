@@ -14,7 +14,7 @@ jobs:
         - uses: actions/checkout@v4
 
         - name: Write file
-          run: echo ${TOP_SECRET} > $TOP_SECRET_FILE
+          run: echo "$TOP_SECRET" > $TOP_SECRET_FILE
         
         - name: Test
           run: |
