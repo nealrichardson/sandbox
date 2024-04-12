@@ -31,4 +31,6 @@ jobs:
             cat test.txt
             cat outside.txt
             ls -alh
+            # test that file contents are identical
+            diff test.txt outside.txt
 
