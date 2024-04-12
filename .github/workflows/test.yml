@@ -19,7 +19,9 @@ jobs:
         - name: Test
           run: |
             cat "$TOP_SECRET_FILE" | true
+            wc -l "$TOP_SECRET_FILE"
             cat test.txt
+            wc -l test.txt
             ls -alh test.txt
             ls -alh "$TOP_SECRET_FILE" | true
         
@@ -29,7 +31,9 @@ jobs:
         - name: Check results
           run: |
             cat test.txt
+            wc -l test.txt
             cat outside.txt
+            wc -l outside.txt
             ls -alh
             # test that file contents are identical
             diff test.txt outside.txt
