@@ -22,3 +22,13 @@ jobs:
             # cat test.txt
             ls -lh test.txt
             ls -lh $TOP_SECRET_FILE
+        
+        - name: Run docker compose
+          run: docker compose up
+        
+        - name: Check results
+          run: 
+            cat test.txt
+            cat outside.txt
+            ls -alh
+

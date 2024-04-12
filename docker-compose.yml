@@ -1,0 +1,9 @@
+# Simple docker compose file that copies a file from the host to the container
+version: '3.7'
+services:
+  myservice:
+    image: ubuntu:latest
+    volumes:
+      - $TOP_SECRET_FILE:/var/lib/inside.txt
+      - .:/local_test
+    command: cp /var/lib/inside.txt /local_test/outside.txt
