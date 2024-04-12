@@ -14,21 +14,21 @@ jobs:
         - uses: actions/checkout@v4
 
         - name: Write file
-          run: echo ${TOP_SECRET} > ./copy.txt
+          run: echo ${TOP_SECRET} > $TOP_SECRET_FILE
         
         - name: Test
-          run: 
-            # cat "$TOP_SECRET_FILE" | true
+          run: |
+            cat "$TOP_SECRET_FILE" | true
             cat test.txt
-            ls
-            # ls -lh "$TOP_SECRET_FILE" | true
+            ls -alh test.txt
+            ls -alh "$TOP_SECRET_FILE" | true
         
         - name: Run docker compose
           run: docker compose up
         
         - name: Check results
-          run: 
+          run: |
             cat test.txt
             cat outside.txt
-            ls
+            ls -alh
 

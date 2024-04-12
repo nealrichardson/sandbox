@@ -4,6 +4,6 @@ services:
   myservice:
     image: ubuntu:latest
     volumes:
-      - ./copy.txt:/var/lib/inside.txt
+      - $TOP_SECRET_FILE:/var/lib/inside.txt
       - .:/local_test
     command: cp /var/lib/inside.txt /local_test/outside.txt
