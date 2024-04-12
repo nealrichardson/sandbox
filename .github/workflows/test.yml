@@ -18,7 +18,7 @@ jobs:
         
         - name: Test
           run: 
-            cat $TOP_SECRET_FILE
-            cat test.txt
-            ls -alh test.txt
-            ls -alh $TOP_SECRET_FILE
+            # cat $TOP_SECRET_FILE
+            # cat test.txt
+            ls -lh test.txt
+            ls -lh $TOP_SECRET_FILE
