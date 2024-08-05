@@ -1,6 +1,0 @@
-here is a file
-with multiple lines
-that we should be able to read
-from a github secret
-via an env var
-and get the same thing
