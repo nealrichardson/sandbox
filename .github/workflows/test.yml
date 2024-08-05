@@ -10,8 +10,9 @@ jobs:
         - uses: 8398a7/action-slack@v3
           with:
             username: "GitHub Actions"
+            author_name: "${{ github.ref_name }}"
             status: failure
-            fields: action,repo,message,commit,author,action,eventName,ref,workflow
+            fields: action,repo,message,commit,author,action,eventName,ref,workflow,pullRequest
             icon_emoji: ":sob:"
             text: "Testing Slack notification"
           env:
