@@ -12,8 +12,8 @@ jobs:
             username: "GitHub Actions"
             author_name: "${{ github.ref_name }}"
             status: failure
-            fields: action,repo,message,commit,author,action,eventName,ref,workflow,pullRequest
+            fields: repo,message,commit,author,eventName,ref,workflow,pullRequest
             icon_emoji: ":sob:"
-            text: "Testing Slack notification"
+            text: "*Make this bold*"
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
