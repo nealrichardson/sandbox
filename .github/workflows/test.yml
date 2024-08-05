@@ -9,10 +9,10 @@ jobs:
       steps:
         - uses: 8398a7/action-slack@v3
           with:
-            author_name: "GitHub Actions"
+            username: "GitHub Actions"
             status: failure
-            fields: action,commit,repo,job,took
-            icon_emoji: ":sad_parrot:"
+            fields: action,repo,message,commit,author,action,eventName,ref,workflow
+            icon_emoji: ":sob:"
             text: "Testing Slack notification"
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
