@@ -14,6 +14,6 @@ jobs:
             status: failure
             fields: repo,message,commit,author,eventName,ref,workflow,pullRequest
             icon_emoji: ":sob:"
-            text: "Testing Slack notification"
+            text: ""
           env:
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
