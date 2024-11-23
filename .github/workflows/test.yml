@@ -16,7 +16,7 @@ jobs:
       pull-requests: read
     # Set job outputs to values from filter step
     outputs:
-      ci: ${{ steps.filter.outputs.ci }}
+      readme: ${{ steps.filter.outputs.readme }}
     steps:
     # For pull requests it's not necessary to checkout the code
     - uses: dorny/paths-filter@v3
@@ -24,19 +24,12 @@ jobs:
       if: github.event_name == 'pull_request'
       with:
         filters: |
-          ci:
-            - '.github/**'
-    # - uses: dorny/paths-filter@v3
-    #   id: filter
-    #   if: github.event_name != 'pull_request'
-    #   with:
-    #     filters: |
-    #       ci:
-    #         - '**'
+          readme:
+            - 'README.md'
     
-  ci:
+  do-it:
     needs: changes
-    if: ${{ needs.changes.outputs.ci != 'false' }}
+    if: ${{ needs.changes.outputs.readme != 'false' }}
     runs-on: ubuntu-latest
     steps:
       - run: echo "This ran!"
