@@ -46,8 +46,17 @@ jobs:
     if: always()
     steps:
       - name: Download Artifact
+        if: ${{ needs.changes.outputs.readme != 'false' }}
         uses: actions/download-artifact@v4
         with:
+          name: art
+      - name: Download Artifact from main instead
+        if: ${{ needs.changes.outputs.readme == 'false' }}
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: test.yml
+          branch: main
+          event: push
           name: art
       - name: Show file
         run: cat newfile.txt
