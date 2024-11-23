@@ -32,4 +32,21 @@ jobs:
     if: ${{ needs.changes.outputs.readme != 'false' }}
     runs-on: ubuntu-latest
     steps:
-      - run: echo "This ran!"
+      - name: Make file
+        run: echo "${{ github.ref }}" > newfile.txt
+      - name: Save Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: art
+          path: newfile.txt
+
+  see-it:
+    needs: [changes, do-it]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: art
+      - name: Show file
+        run: cat newfile.txt
