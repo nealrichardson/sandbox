@@ -21,7 +21,7 @@ runs:
     - name: Download Artifact from main instead
       id: download-main
       uses: dawidd6/action-download-artifact@v6
-      if: github.event_name == 'pull_request' && steps.download-local.outcome == "failure"
+      if: github.event_name == 'pull_request' && steps.download-local.outcome == 'failure'
       with:
         workflow: test.yml
         branch: main
@@ -29,6 +29,13 @@ runs:
         name: ${{ inputs.name }}
     - name: Make sure at least one step passed
       run: |
-        [ ${{ steps.download-local.outcome }} = "success" ] || [ ${{ steps.download-main.outcome }} = "success" ]
+        if [ ${{ steps.download-local.outcome }} = "success" ]; then
+          echo "Artifact downloaded successfully from the current run"
+        elif [ ${{ steps.download-main.outcome }} = "success" ]; then
+          echo "Artifact downloaded successfully from main"
+        else
+          echo "Failed to download artifact"
+          exit 1
+        fi
       shell: bash
 
