@@ -32,8 +32,7 @@ jobs:
     if: ${{ needs.changes.outputs.readme != 'false' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: .github/actions/download-with-fallback@v1
+      - uses: ./.github/actions/download-with-fallback@v1
         id: testing
         with:
           who-to-greet: 'Newman'
