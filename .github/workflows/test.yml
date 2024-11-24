@@ -50,6 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/download-with-fallback
         with:
           name: art
