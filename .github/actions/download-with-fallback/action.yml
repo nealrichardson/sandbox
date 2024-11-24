@@ -1,10 +1,10 @@
 name: 'Hello World'
 description: 'Greet someone'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  name:
+    description: 'Artifact to download'
     required: true
-    default: 'World'
+    default: ''
 outputs:
   random-number:
     description: "Random number"
@@ -12,14 +12,20 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Set Greeting
-      run: echo "Hello $INPUT_WHO_TO_GREET."
-      shell: bash
-      env:
-        INPUT_WHO_TO_GREET: ${{ inputs.who-to-greet }}
-
-    - name: Random Number Generator
-      id: random-number-generator
-      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
-      shell: bash
+    - name: Download Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+      continue-on-error: true
+    - name: Download Artifact from main instead
+      uses: dawidd6/action-download-artifact@v6
+      if: github.event_name == 'pull_request' && failure()
+      with:
+        workflow: test.yml
+        branch: main
+        event: push
+        name: ${{ inputs.name }}
+    - name: Make sure at least one step passed
+      run: |
+        ${{ steps.download-artifact.outputs.artifact_name }} || ${{ steps.download-artifact-from-main.outputs.artifact_name }}
 
