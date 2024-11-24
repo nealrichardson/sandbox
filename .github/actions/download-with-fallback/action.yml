@@ -1,0 +1,41 @@
+name: 'Hello World'
+description: 'Greet someone'
+inputs:
+  name:
+    description: 'Artifact to download'
+    required: true
+    default: ''
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: Download Artifact
+      id: download-local
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+      continue-on-error: true
+    - name: Download Artifact from main instead
+      id: download-main
+      uses: dawidd6/action-download-artifact@v6
+      if: github.event_name == 'pull_request' && steps.download-local.outcome == 'failure'
+      with:
+        workflow: test.yml
+        branch: main
+        event: push
+        name: ${{ inputs.name }}
+    - name: Make sure at least one step passed
+      run: |
+        if [ ${{ steps.download-local.outcome }} = "success" ]; then
+          echo "Artifact downloaded successfully from the current run"
+        elif [ ${{ steps.download-main.outcome }} = "success" ]; then
+          echo "Artifact downloaded successfully from main"
+        else
+          echo "Failed to download artifact"
+          exit 1
+        fi
+      shell: bash
+

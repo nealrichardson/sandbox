@@ -32,8 +32,13 @@ jobs:
     if: ${{ needs.changes.outputs.readme != 'false' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/hello-world
+        id: testing
+        with:
+          who-to-greet: 'Newman'
       - name: Make file
-        run: echo "${{ github.ref }}" > newfile.txt
+        run: echo "${{ github.ref }}\n${{ steps.testing.outputs.random-number }}" > newfile.txt
       - name: Save Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -45,18 +50,9 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     steps:
-      - name: Download Artifact
-        if: ${{ needs.changes.outputs.readme != 'false' }}
-        uses: actions/download-artifact@v4
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/download-with-fallback
         with:
-          name: art
-      - name: Download Artifact from main instead
-        if: ${{ needs.changes.outputs.readme == 'false' }}
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          workflow: test.yml
-          branch: main
-          event: push
           name: art
       - name: Show file
         run: cat newfile.txt
