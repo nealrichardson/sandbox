@@ -32,8 +32,12 @@ jobs:
     if: ${{ needs.changes.outputs.readme != 'false' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: .github/actions/download-with-fallback@v1
+        id: testing
+        with:
+          who-to-greet: 'Newman'
       - name: Make file
-        run: echo "${{ github.ref }}" > newfile.txt
+        run: echo "${{ github.ref }}\n${{ steps.testing.outputs.random-number }}" > newfile.txt
       - name: Save Artifacts
         uses: actions/upload-artifact@v4
         with:
