@@ -13,13 +13,15 @@ runs:
   using: "composite"
   steps:
     - name: Download Artifact
+      id: download-local
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.name }}
       continue-on-error: true
     - name: Download Artifact from main instead
+      id: download-main
       uses: dawidd6/action-download-artifact@v6
-      if: github.event_name == 'pull_request' && failure()
+      if: github.event_name == 'pull_request' && steps.download-local.outcome == "failure"
       with:
         workflow: test.yml
         branch: main
@@ -27,5 +29,6 @@ runs:
         name: ${{ inputs.name }}
     - name: Make sure at least one step passed
       run: |
-        ${{ steps.download-artifact.outputs.artifact_name }} || ${{ steps.download-artifact-from-main.outputs.artifact_name }}
+        [ ${{ steps.download-local.outcome }} = "success" ] || [ ${{ steps.download-main.outcome }} = "success" ]
+      shell: bash
 
