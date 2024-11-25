@@ -7,6 +7,7 @@ inputs:
   path:
     description: 'Destination path. Supports basic tilde expansion. Defaults to $GITHUB_WORKSPACE'
     required: false
+    default: "./"
 outputs:
   random-number:
     description: "Random number"
