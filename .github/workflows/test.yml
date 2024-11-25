@@ -49,6 +49,9 @@ jobs:
     needs: [changes, do-it]
     runs-on: ubuntu-latest
     if: always()
+    strategy:
+      matrix:
+        numbers: ${{ needs.changes.outputs.readme != 'false' && fromJSON('[1, 2, 3]') || fromJSON('[5]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/download-with-fallback
