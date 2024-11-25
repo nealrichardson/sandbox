@@ -16,6 +16,7 @@ runs:
   using: "composite"
   steps:
     - name: Check if artifact exists on this run
+      # Remove if https://github.com/actions/download-artifact/issues/352 happens
       uses: actions/github-script@v7
       id: check-artifact
       with:
@@ -26,34 +27,29 @@ runs:
             run_id: context.runId,
             name: '${{ inputs.name }}'
           });
-          console.log(artifacts.data);
-          core.setOutput('artifact_exists', artifacts.data.artifacts.length > 0);
+          # console.log(artifacts.data);
+          core.setOutput('artifact-exists', artifacts.data.artifacts.length > 0);
     - name: Download Artifact
       id: download-local
       uses: actions/download-artifact@v4
-      if: steps.check-artifact.outputs.artifact_exists == 'true'
+      if: steps.check-artifact.outputs.artifact-exists == 'true'
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
     - name: Download Artifact from main instead
       id: download-main
       uses: dawidd6/action-download-artifact@v6
-      if: github.event_name == 'pull_request' && steps.check-artifact.outputs.artifact_exists == 'false'
+      if: github.event_name == 'pull_request' && steps.check-artifact.outputs.artifact-exists == 'false'
       with:
         workflow: ${{ inputs.workflow }}
         branch: main
         event: push
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
-    - name: Make sure at least one step passed
+    - name: Add annotation if downloading from main
       run: |
-        if [ ${{ steps.download-local.outcome }} = "success" ]; then
-          echo "Artifact downloaded successfully from the current run"
-        elif [ ${{ steps.download-main.outcome }} = "success" ]; then
-          echo "Artifact downloaded successfully from main"
-        else
-          echo "Failed to download artifact"
-          exit 1
+        lif [ ${{ steps.download-main.outcome }} = "success" ]; then
+          echo "::notice title=${{ inputs.name }}::downloaded from main"
         fi
       shell: bash
 
