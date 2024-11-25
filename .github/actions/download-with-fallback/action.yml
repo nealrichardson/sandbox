@@ -20,12 +20,14 @@ runs:
       id: check-artifact
       with:
         script: |
-          const artifacts = await github.actions.listArtifactsForRepo({
+          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            run_id: context.runId
+            run_id: context.runId,
+            name: '${{ inputs.name }}'
           });
-          core.setOutput('artifact_exists', artifacts.data.artifacts.some(artifact => artifact.name === '${{ inputs.name }}'));
+          console.log(artifacts.data);
+          core.setOutput('artifact_exists', artifacts.data.artifacts.length > 0);
     - name: Download Artifact
       id: download-local
       uses: actions/download-artifact@v4
