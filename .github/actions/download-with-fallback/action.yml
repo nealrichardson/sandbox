@@ -8,6 +8,10 @@ inputs:
     description: 'Destination path. Supports basic tilde expansion. Defaults to $GITHUB_WORKSPACE'
     required: false
     default: "./"
+  workflow:
+    description: 'Name of the workflow that produced the artifact.'
+    required: false
+    default: test.yml
 outputs:
   random-number:
     description: "Random number"
@@ -27,7 +31,7 @@ runs:
       uses: dawidd6/action-download-artifact@v6
       if: github.event_name == 'pull_request' && steps.download-local.outcome == 'failure'
       with:
-        workflow: ${{ github.workflow }}
+        workflow: ${{ inputs.workflow }}
         branch: main
         event: push
         name: ${{ inputs.name }}
