@@ -48,7 +48,7 @@ runs:
         path: ${{ inputs.path }}
     - name: Add annotation if downloading from main
       run: |
-        lif [ ${{ steps.download-main.outcome }} = "success" ]; then
+        if [ ${{ steps.download-main.outcome }} = "success" ]; then
           echo "::notice title=${{ inputs.name }}::downloaded from main"
         fi
       shell: bash
