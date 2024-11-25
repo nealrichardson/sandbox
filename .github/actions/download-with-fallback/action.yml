@@ -5,31 +5,38 @@ inputs:
     description: 'Name of the artifact to download. If unspecified, all artifacts for the run are downloaded.'
     required: false
   path:
-    description: 'Destination path. Supports basic tilde expansion. Defaults to $GITHUB_WORKSPACE'
+    description: 'Destination path. Supports basic tilde expansion.'
     required: false
     default: "./"
   workflow:
     description: 'Name of the workflow that produced the artifact.'
     required: false
     default: test.yml
-outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
 runs:
   using: "composite"
   steps:
+    - name: Check if artifact exists on this run
+      uses: actions/github-script@v7
+      id: check-artifact
+      with:
+        script: |
+          const artifacts = await github.actions.listArtifactsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            run_id: context.runId
+          });
+          core.setOutput('artifact_exists', artifacts.data.artifacts.some(artifact => artifact.name === '${{ inputs.name }}'));
     - name: Download Artifact
       id: download-local
       uses: actions/download-artifact@v4
+      if: steps.check-artifact.outputs.artifact_exists == 'true'
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
-      continue-on-error: true
     - name: Download Artifact from main instead
       id: download-main
       uses: dawidd6/action-download-artifact@v6
-      if: github.event_name == 'pull_request' && steps.download-local.outcome == 'failure'
+      if: github.event_name == 'pull_request' && steps.check-artifact.outputs.artifact_exists == 'false'
       with:
         workflow: ${{ inputs.workflow }}
         branch: main
