@@ -28,18 +28,18 @@ runs:
             name: '${{ inputs.name }}'
           });
           # console.log(artifacts.data);
-          core.setOutput('artifact-exists', artifacts.data.artifacts.length > 0);
+          core.setOutput('exists', artifacts.data.artifacts.length > 0);
     - name: Download Artifact
       id: download-local
       uses: actions/download-artifact@v4
-      if: steps.check-artifact.outputs.artifact-exists == 'true'
+      if: steps.check-artifact.outputs.exists == 'true'
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
     - name: Download Artifact from main instead
       id: download-main
       uses: dawidd6/action-download-artifact@v6
-      if: github.event_name == 'pull_request' && steps.check-artifact.outputs.artifact-exists == 'false'
+      if: github.event_name == 'pull_request' && steps.check-artifact.outputs.exists == 'false'
       with:
         workflow: ${{ inputs.workflow }}
         branch: main
