@@ -2,9 +2,11 @@ name: 'Hello World'
 description: 'Greet someone'
 inputs:
   name:
-    description: 'Artifact to download'
-    required: true
-    default: ''
+    description: 'Name of the artifact to download. If unspecified, all artifacts for the run are downloaded.'
+    required: false
+  path:
+    description: 'Destination path. Supports basic tilde expansion. Defaults to $GITHUB_WORKSPACE'
+    required: false
 outputs:
   random-number:
     description: "Random number"
@@ -17,6 +19,7 @@ runs:
       uses: actions/download-artifact@v4
       with:
         name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
       continue-on-error: true
     - name: Download Artifact from main instead
       id: download-main
@@ -27,6 +30,7 @@ runs:
         branch: main
         event: push
         name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
     - name: Make sure at least one step passed
       run: |
         if [ ${{ steps.download-local.outcome }} = "success" ]; then
