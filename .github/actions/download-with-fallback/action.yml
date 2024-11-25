@@ -1,5 +1,5 @@
-name: 'Hello World'
-description: 'Greet someone'
+name: 'Download artifact with fallback to main'
+description: 'Download an artifact from the current run, or from the main branch if it does not exist. The fallback is only used when running on a pull request; when running on tags or the main branch, the artifact must exist in the current run. If using a fallback, an annotation is added to the run.'
 inputs:
   name:
     description: 'Name of the artifact to download. If unspecified, all artifacts for the run are downloaded.'
@@ -32,7 +32,7 @@ runs:
     - name: Download Artifact
       id: download-local
       uses: actions/download-artifact@v4
-      if: steps.check-artifact.outputs.exists == 'true'
+      if: github.event_name != 'pull_request' || steps.check-artifact.outputs.exists == 'true'
       with:
         name: ${{ inputs.name }}
         path: ${{ inputs.path }}
@@ -49,7 +49,7 @@ runs:
     - name: Add annotation if downloading from main
       run: |
         if [ ${{ steps.download-main.outcome }} = "success" ]; then
-          echo "::notice title=${{ inputs.name }}::downloaded from main"
+          echo "::notice title=${{ inputs.name }}::Downloaded from main"
         fi
       shell: bash
 
