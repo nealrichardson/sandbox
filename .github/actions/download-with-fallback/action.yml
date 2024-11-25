@@ -27,7 +27,7 @@ runs:
       uses: dawidd6/action-download-artifact@v6
       if: github.event_name == 'pull_request' && steps.download-local.outcome == 'failure'
       with:
-        workflow: test.yml
+        workflow: ${{ github.workflow }}
         branch: main
         event: push
         name: ${{ inputs.name }}
