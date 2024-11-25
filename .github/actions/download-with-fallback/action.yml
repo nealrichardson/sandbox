@@ -27,7 +27,7 @@ runs:
             run_id: context.runId,
             name: '${{ inputs.name }}'
           });
-          # console.log(artifacts.data);
+          // console.log(artifacts.data);
           core.setOutput('exists', artifacts.data.artifacts.length > 0);
     - name: Download Artifact
       id: download-local
