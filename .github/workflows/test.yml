@@ -53,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Print github
         run: |
-          echo "${{ fromJSON(github) }}"
+          echo "${{ toJSON(github) }}"
 
       - uses: ./.github/actions/download-with-fallback
         with:
