@@ -51,6 +51,10 @@ jobs:
     if: always()
     steps:
       - uses: actions/checkout@v4
+      - name: Print github
+        run: |
+          echo "${{ toJSON(github) }}"
+
       - uses: ./.github/actions/download-with-fallback
         with:
           name: art
