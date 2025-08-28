@@ -177,7 +177,14 @@ jobs:
       - name: Comment on PR with failure details
         if: failure()
         run: |
+          # Get the job ID for this specific job
+          job_id=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/jobs \
+            --jq ".jobs[] | select(.name == \"${{ github.job }}\") | .id")
+          
           gh pr comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body \
-            "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}) for details."
+            "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$job_id) for details."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
