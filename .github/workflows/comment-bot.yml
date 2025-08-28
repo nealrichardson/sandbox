@@ -109,7 +109,7 @@ jobs:
           echo "Triggering workflow: $workflow on branch: $branch"
 
           # Trigger the workflow on the PR branch
-          gh workflow run "$workflow.yml" --ref "$branch" $args
+          gh workflow run -R ${{ github.repository }} "$workflow.yml" --ref "$branch" $args
 
           # Wait a moment for the workflow to appear
           sleep 5
