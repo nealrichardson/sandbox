@@ -163,3 +163,13 @@ jobs:
             "🚀 Triggered \`$workflow\` workflow on branch \`$branch\`. Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/$run_id) for progress."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add reaction to comment
+        if: failure()
+        run: |
+          gh api \
+            --method POST \
+            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            --field content=-1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
