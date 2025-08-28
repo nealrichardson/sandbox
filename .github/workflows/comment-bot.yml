@@ -164,12 +164,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add reaction to comment
+      - name: Add reaction to comment on failure
         if: failure()
         run: |
           gh api \
             --method POST \
             repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
             --field content=-1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR with failure details
+        if: failure()
+        run: |
+          gh pr comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body \
+            "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
