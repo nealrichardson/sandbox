@@ -85,32 +85,34 @@ jobs:
 
           echo "Triggering workflow: $workflow on branch: $branch"
 
-          # Build inputs JSON from args
-          inputs_json="{}"
+          # Trigger workflow via API
           if [ -n "$args" ]; then
-            # Convert "-f key=value -f key2=value2" to JSON
-            inputs_json=$(echo "$args" | sed 's/-f //g' | awk '{
-              print "{"
-              for(i=1;i<=NF;i++) {
-                split($i, kv, "=")
-                printf "\"%s\":\"%s\"", kv[1], kv[2]
-                if(i<NF) printf ","
-              }
-              print "}"
-            }')
+            # Build the API call with inputs
+            inputs_args=""
+            for arg in $(echo "$args" | sed 's/-f //g'); do
+              key=$(echo "$arg" | cut -d= -f1)
+              value=$(echo "$arg" | cut -d= -f2-)
+              inputs_args="$inputs_args -f inputs[$key]=\"$value\""
+            done
+            
+            echo "Inputs args: $inputs_args"
+            
+            eval "gh api \
+              --method POST \
+              -H \"Accept: application/vnd.github+json\" \
+              -H \"X-GitHub-Api-Version: 2022-11-28\" \
+              /repos/${{ github.repository }}/actions/workflows/$workflow.yml/dispatches \
+              -f ref=\"$branch\" \
+              $inputs_args"
+          else
+            # No inputs
+            gh api \
+              --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/${{ github.repository }}/actions/workflows/$workflow.yml/dispatches \
+              -f ref="$branch"
           fi
-          
-          echo "Inputs JSON: $inputs_json"
-
-          # Trigger workflow via API and get run ID from location header
-          response=$(gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/actions/workflows/$workflow.yml/dispatches \
-            -f ref="$branch" \
-            -f inputs="$inputs_json" \
-            --include)
           
           # Extract run ID from the response (GitHub doesn't return it directly, need to query)
           sleep 2
