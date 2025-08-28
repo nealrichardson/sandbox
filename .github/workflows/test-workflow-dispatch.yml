@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
     inputs:
-      sucesss:
+      success:
         description: "Do you want the workflow to succeed?"
         required: false
         type: boolean
@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Fail if we should
-        if: ${{ inputs.sucesss == 'false' }}
+        if: ${{ inputs.success == 'false' }}
         run: exit 1
       - name: Otherwise, succeed
         run: echo "The workflow has succeeded!"
