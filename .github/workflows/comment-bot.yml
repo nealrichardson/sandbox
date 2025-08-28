@@ -109,13 +109,13 @@ jobs:
           echo "Triggering workflow: $workflow on branch: $branch"
 
           # Trigger the workflow on the PR branch
-          gh workflow run -R ${{ github.repository }} "$workflow.yml" --ref "$branch" $args
+          gh workflow run "$workflow.yml" --repo ${{ github.repository }} --ref "$branch" $args
 
           # Wait a moment for the workflow to appear
           sleep 5
 
           # Get the workflow run ID
-          run_id=$(gh run list --workflow="$workflow.yml" --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
+          run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -155,7 +155,7 @@ jobs:
           branch="${{ steps.get-pr.outputs.branch }}"
           run_id="${{ steps.trigger-workflow.outputs.run_id }}"
 
-          gh pr comment ${{ github.event.issue.number }} --body \
+          gh pr comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body \
             "🚀 Triggered \`$workflow\` workflow on branch \`$branch\`. Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/$run_id) for progress."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
