@@ -74,6 +74,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Trigger workflow
+        if: steps.check-comment.outputs.workflow != ''
+        id: trigger-workflow
+        run: |
+          set -x
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          args="${{ steps.check-comment.outputs.arg_flags }}"
+          branch="${{ steps.get-pr.outputs.branch }}"
+
+          echo "Triggering workflow: $workflow on branch: $branch"
+
+          # Trigger the workflow on the PR branch
+          gh workflow run "$workflow.yml" --repo ${{ github.repository }} --ref "$branch" $args
+
+          # Wait a moment for the workflow to appear
+          sleep 5
+
+          # Get the workflow run ID
+          run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create check run
         if: steps.check-comment.outputs.workflow != ''
         id: create-check
@@ -98,22 +121,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Trigger workflow
+      - name: Get workflow run ID
         if: steps.check-comment.outputs.workflow != ''
-        id: trigger-workflow
+        id: get-run-id
         run: |
           set -x
           workflow="${{ steps.check-comment.outputs.workflow }}"
-          args="${{ steps.check-comment.outputs.arg_flags }}"
           branch="${{ steps.get-pr.outputs.branch }}"
 
-          echo "Triggering workflow: $workflow on branch: $branch"
-
-          # Trigger the workflow on the PR branch
-          gh workflow run "$workflow.yml" --repo ${{ github.repository }} --ref "$branch" $args
-
           # Wait a moment for the workflow to appear
-          sleep 5
+          sleep 1
 
           # Get the workflow run ID
           run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
@@ -137,7 +154,7 @@ jobs:
           workflow="${{ steps.check-comment.outputs.workflow }}"
           branch="${{ steps.get-pr.outputs.branch }}"
           check_run_id="${{ steps.create-check.outputs.check_run_id }}"
-          run_id="${{ steps.trigger-workflow.outputs.run_id }}"
+          run_id="${{ steps.get-run-id.outputs.run_id }}"
 
           # Update check run with workflow link and in_progress status
           gh api \
