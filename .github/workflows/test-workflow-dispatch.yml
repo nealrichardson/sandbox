@@ -1,5 +1,3 @@
-name: test-workflow-dispatch
-
 on:
   workflow_dispatch:
     inputs:
@@ -8,6 +6,10 @@ on:
         required: false
         type: boolean
         default: true
+
+permissions:
+  checks: write
+  contents: read
 
 jobs:
   test:
@@ -18,3 +20,11 @@ jobs:
         run: exit 1
       - name: Otherwise, succeed
         run: echo "The workflow has succeeded!"
+
+      - name: Update associated check run
+        if: always()
+        uses: ./.github/actions/update-check-run
+        with:
+          workflow-name: test-workflow-dispatch
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          job-status: ${{ job.status }}
