@@ -74,6 +74,30 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Create check run
+        if: steps.check-comment.outputs.workflow != ''
+        id: create-check
+        run: |
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          head_sha="${{ steps.get-pr.outputs.head_sha }}"
+
+          check_run_id=$(gh api \
+            --method POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs \
+            -f name="Manual: $workflow" \
+            -f head_sha="$head_sha" \
+            -f status="queued" \
+            -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f 'output[title]=Workflow Triggered' \
+            -f 'output[summary]=Manually triggered workflow is starting...' \
+            --jq '.id')
+
+          echo "check_run_id=$check_run_id" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Trigger workflow
         if: steps.check-comment.outputs.workflow != ''
         id: trigger-workflow
@@ -118,30 +142,6 @@ jobs:
           sleep 2
           run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Create check run
-        if: steps.check-comment.outputs.workflow != ''
-        id: create-check
-        run: |
-          workflow="${{ steps.check-comment.outputs.workflow }}"
-          head_sha="${{ steps.get-pr.outputs.head_sha }}"
-
-          check_run_id=$(gh api \
-            --method POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            /repos/${{ github.repository }}/check-runs \
-            -f name="Manual: $workflow" \
-            -f head_sha="$head_sha" \
-            -f status="queued" \
-            -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            -f 'output[title]=Workflow Triggered' \
-            -f 'output[summary]=Manually triggered workflow is starting...' \
-            --jq '.id')
-
-          echo "check_run_id=$check_run_id" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
