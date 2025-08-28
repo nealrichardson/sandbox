@@ -178,6 +178,6 @@ jobs:
         if: failure()
         run: |
           gh pr comment ${{ github.event.issue.number }} --repo ${{ github.repository }} --body \
-            "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+            "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/${{ github.job }}) for details."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
