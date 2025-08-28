@@ -15,13 +15,14 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v5
+
       - name: Fail if we should
         if: ${{ !inputs.success }}
         run: exit 1
       - name: Otherwise, succeed
         run: echo "The workflow has succeeded!"
 
-      - uses: actions/checkout@v5
       - name: Update associated check run
         if: always()
         uses: ./.github/actions/update-check-run
