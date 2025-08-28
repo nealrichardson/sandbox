@@ -87,13 +87,16 @@ jobs:
 
           # Trigger the workflow on the PR branch
           gh workflow run "$workflow.yml" --repo ${{ github.repository }} --ref "$branch" $args
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          # Wait a moment for the workflow to appear
-          sleep 5
-
-          # Get the workflow run ID
-          run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
-          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+      - name: Add reaction to comment
+        if: steps.check-comment.outputs.workflow != ''
+        run: |
+          gh api \
+            --method POST \
+            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            --field content=rocket
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -130,21 +133,11 @@ jobs:
           branch="${{ steps.get-pr.outputs.branch }}"
 
           # Wait a moment for the workflow to appear
-          sleep 1
+          sleep 5
 
           # Get the workflow run ID
           run_id=$(gh run list --workflow="$workflow.yml" --repo ${{ github.repository }} --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
           echo "run_id=$run_id" >> $GITHUB_OUTPUT
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Add reaction to comment
-        if: steps.check-comment.outputs.workflow != ''
-        run: |
-          gh api \
-            --method POST \
-            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
-            --field content=rocket
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
