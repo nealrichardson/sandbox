@@ -28,7 +28,6 @@ jobs:
       - name: Check comment for trigger commands
         id: check-comment
         run: |
-          set -x
           comment="${{ github.event.comment.body }}"
           echo "Comment: $comment"
 
@@ -103,6 +102,7 @@ jobs:
         if: steps.check-comment.outputs.workflow != ''
         id: trigger-workflow
         run: |
+          set -x
           workflow="${{ steps.check-comment.outputs.workflow }}"
           args="${{ steps.check-comment.outputs.arg_flags }}"
           branch="${{ steps.get-pr.outputs.branch }}"
