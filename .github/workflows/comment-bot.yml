@@ -83,12 +83,15 @@ jobs:
 
           check_run_id=$(gh api \
             --method POST \
-            repos/${{ github.repository }}/check-runs \
-            --field name="Manual: $workflow" \
-            --field head_sha="$head_sha" \
-            --field status="queued" \
-            --field started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-            --field output='{"title":"Workflow Triggered","summary":"Manually triggered workflow is starting..."}' \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs \
+            -f name="Manual: $workflow" \
+            -f head_sha="$head_sha" \
+            -f status="queued" \
+            -f started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f 'output[title]=Workflow Triggered' \
+            -f 'output[summary]=Manually triggered workflow is starting...' \
             --jq '.id')
 
           echo "check_run_id=$check_run_id" >> $GITHUB_OUTPUT
