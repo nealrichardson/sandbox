@@ -1,0 +1,157 @@
+# This workflow allows you to trigger nightly or other workflows with
+# workflow_dispatch via PR comments. It also creates and updates a check run
+# to provide feedback on the status of the triggered workflow.
+#
+# To use this workflow, comment on a PR with:
+#
+# /run workflow-name arg1=value1 arg2=value2
+#
+name: PR Comment Workflow Triggers
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+  checks: write
+
+jobs:
+  trigger-workflow:
+    # Only run on pull request comments
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check comment for trigger commands
+        id: check-comment
+        run: |
+          comment="${{ github.event.comment.body }}"
+          echo "Comment: $comment"
+
+          # Find all lines that start with /run (perhaps with leading spaces)
+          command_lines=$(echo "$comment" | grep -E '^\s*/run')
+          # Commands will be like /run workflow_name arg=value ...
+          # We will look for specific commands to trigger workflows
+          echo "Command lines: $command_lines"
+          # If there are no command lines, set trigger to false
+          if [ -z "$command_lines" ]; then
+            echo "trigger=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # We now have lines like `/run workflow_name arg=value ...`
+          # Extract workflow_name from the first command line
+          # For simplicity, we will only consider the first command line
+          first_command=$(echo "$command_lines" | head -n 1)
+          echo "First command: $first_command"
+          # Extract the command (the part after /run and before any spaces)
+          command=$(echo "$first_command" | awk '{print $1}' | sed 's|^\s*/run||')
+          echo "Extracted command: $command"
+          echo "workflow=$command" >> $GITHUB_OUTPUT
+          # Now extract arguments (if any)
+          # For each arg=value pair, put a -f in front of them for the gh command
+          args=$(echo "$first_command" | awk '{for(i=2;i<=NF;i++) print $i}')
+          arg_flags=""
+          for arg in $args; do
+            arg_flags="$arg_flags -f $arg"
+          done
+          echo "arg_flags=$arg_flags" >> $GITHUB_OUTPUT
+
+      - name: Get PR details
+        if: steps.check-comment.outputs.trigger == 'true'
+        id: get-pr
+        run: |
+          pr_number="${{ github.event.issue.number }}"
+          pr_data=$(gh api repos/${{ github.repository }}/pulls/$pr_number)
+          branch=$(echo "$pr_data" | jq -r '.head.ref')
+          head_sha=$(echo "$pr_data" | jq -r '.head.sha')
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "head_sha=$head_sha" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create check run
+        if: steps.check-comment.outputs.trigger == 'true'
+        id: create-check
+        run: |
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          head_sha="${{ steps.get-pr.outputs.head_sha }}"
+
+          check_run_id=$(gh api \
+            --method POST \
+            repos/${{ github.repository }}/check-runs \
+            --field name="Manual: $workflow" \
+            --field head_sha="$head_sha" \
+            --field status="queued" \
+            --field started_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --field output='{"title":"Workflow Triggered","summary":"Manually triggered workflow is starting..."}' \
+            --jq '.id')
+
+          echo "check_run_id=$check_run_id" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger workflow
+        if: steps.check-comment.outputs.trigger == 'true'
+        id: trigger-workflow
+        run: |
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          args="${{ steps.check-comment.outputs.arg_flags }}"
+          branch="${{ steps.get-pr.outputs.branch }}"
+
+          echo "Triggering workflow: $workflow on branch: $branch"
+
+          # Trigger the workflow on the PR branch
+          gh workflow run "$workflow.yml" --ref "$branch" $args
+
+          # Wait a moment for the workflow to appear
+          sleep 5
+
+          # Get the workflow run ID
+          run_id=$(gh run list --workflow="$workflow.yml" --branch="$branch" --limit=1 --json databaseId --jq '.[0].databaseId')
+          echo "run_id=$run_id" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add reaction to comment
+        if: steps.check-comment.outputs.trigger == 'true'
+        run: |
+          gh api \
+            --method POST \
+            repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
+            --field content=rocket
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update check run with workflow link
+        if: steps.check-comment.outputs.trigger == 'true'
+        run: |
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          branch="${{ steps.get-pr.outputs.branch }}"
+          check_run_id="${{ steps.create-check.outputs.check_run_id }}"
+          run_id="${{ steps.trigger-workflow.outputs.run_id }}"
+
+          # Update check run with workflow link and in_progress status
+          gh api \
+            --method PATCH \
+            repos/${{ github.repository }}/check-runs/$check_run_id \
+            --field status="in_progress" \
+            --field details_url="https://github.com/${{ github.repository }}/actions/runs/$run_id" \
+            --field output="{\"title\":\"Workflow Running\",\"summary\":\"The \`$workflow\` workflow is now running on branch \`$branch\`. [View workflow run](https://github.com/${{ github.repository }}/actions/runs/$run_id)\"}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR with status
+        if: steps.check-comment.outputs.trigger == 'true'
+        run: |
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+          branch="${{ steps.get-pr.outputs.branch }}"
+          run_id="${{ steps.trigger-workflow.outputs.run_id }}"
+
+          gh pr comment ${{ github.event.issue.number }} --body \
+            "🚀 Triggered \`$workflow\` workflow on branch \`$branch\`. Check the [workflow run](https://github.com/${{ github.repository }}/actions/runs/$run_id) for progress."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,89 @@
+name: Update Check Run Status
+
+on:
+  workflow_run:
+    workflows:
+      - "test-workflow-dispatch"
+    types:
+      - completed
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: read
+
+jobs:
+  update-check-run:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'workflow_dispatch'
+
+    steps:
+      - name: Find associated check run
+        id: find-check
+        run: |
+          workflow_name="${{ github.event.workflow_run.name }}"
+          head_sha="${{ github.event.workflow_run.head_sha }}"
+
+          # Find check run with matching name pattern and head SHA
+          check_run_id=$(gh api \
+            repos/${{ github.repository }}/commits/$head_sha/check-runs \
+            --jq ".check_runs[] | select(.name == \"Manual: $workflow_name\") | .id" \
+            | head -1)
+
+          if [ -n "$check_run_id" ]; then
+            echo "check_run_id=$check_run_id" >> $GITHUB_OUTPUT
+            echo "found=true" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update check run status
+        if: steps.find-check.outputs.found == 'true'
+        run: |
+          check_run_id="${{ steps.find-check.outputs.check_run_id }}"
+          workflow_name="${{ github.event.workflow_run.name }}"
+          workflow_conclusion="${{ github.event.workflow_run.conclusion }}"
+          workflow_run_id="${{ github.event.workflow_run.id }}"
+
+          # Map workflow conclusion to check run conclusion
+          case "$workflow_conclusion" in
+            "success")
+              conclusion="success"
+              title="Workflow Completed Successfully"
+              summary="✅ The \`$workflow_name\` workflow completed successfully."
+              ;;
+            "failure")
+              conclusion="failure"
+              title="Workflow Failed"
+              summary="❌ The \`$workflow_name\` workflow failed."
+              ;;
+            "cancelled")
+              conclusion="cancelled"
+              title="Workflow Cancelled"
+              summary="⏹️ The \`$workflow_name\` workflow was cancelled."
+              ;;
+            "skipped")
+              conclusion="skipped"
+              title="Workflow Skipped"
+              summary="⏭️ The \`$workflow_name\` workflow was skipped."
+              ;;
+            *)
+              conclusion="neutral"
+              title="Workflow Completed"
+              summary="The \`$workflow_name\` workflow completed with status: $workflow_conclusion"
+              ;;
+          esac
+
+          # Update the check run
+          gh api \
+            --method PATCH \
+            repos/${{ github.repository }}/check-runs/$check_run_id \
+            --field status="completed" \
+            --field conclusion="$conclusion" \
+            --field completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --field details_url="https://github.com/${{ github.repository }}/actions/runs/$workflow_run_id" \
+            --field output="{\"title\":\"$title\",\"summary\":\"$summary [View workflow run](https://github.com/${{ github.repository }}/actions/runs/$workflow_run_id)\"}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
