@@ -170,7 +170,7 @@ jobs:
           gh api \
             --method POST \
             repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions \
-            --field content=-1
+            --field content="-1"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
