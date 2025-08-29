@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+
 set -e
 
 # Find all lines that start with /run (perhaps with leading spaces)
