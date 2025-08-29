@@ -212,3 +212,5 @@ jobs:
             -f details_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             -f 'output[title]'="Invalid workflow" \
             -f "output[summary]=Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$job_id) for details."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
