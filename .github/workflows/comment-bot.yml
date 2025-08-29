@@ -194,3 +194,21 @@ jobs:
             "❌ Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$job_id) for details."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Cancel the check run if we failed to run workflow
+        if: failure() && steps.create-check.outputs.check_run_id != ''
+        run: |
+          check_run_id="${{ steps.create-check.outputs.check_run_id }}"
+          workflow="${{ steps.check-comment.outputs.workflow }}"
+
+          gh api \
+            --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            /repos/${{ github.repository }}/check-runs/$check_run_id \
+            -f status="completed" \
+            -f conclusion="cancelled" \
+            -f completed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            -f details_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            -f 'output[title]'="Invalid workflow" \
+            -f "output[summary]=Failed to trigger workflow. Check the [comment bot logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}/job/$job_id) for details."
