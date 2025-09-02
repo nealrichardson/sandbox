@@ -1,16 +1,15 @@
 #!/usr/bin/env zsh
 set -e
 
+echo "Comment: $comment"
+
 # Find all lines that start with /run (perhaps with leading spaces)
-command_lines=$(echo "$comment" | grep -E '^\s*/run')
 # Commands will be like /run workflow_name arg=value ...
-# We will look for specific commands to trigger workflows
-echo "Command lines: $command_lines"
-# If there are no command lines, set trigger to false
-if [ -z "$command_lines" ]; then
-  echo "trigger=false" >> $GITHUB_OUTPUT
+if ! command_lines=$(echo "$comment" | grep -E '^\s*/run'); then
+  # If there are no command lines, exit
   exit 0
 fi
+echo "Command lines: $command_lines"
 
 # We now have lines like `/run workflow_name arg=value ...`
 # Extract workflow_name from the first command line

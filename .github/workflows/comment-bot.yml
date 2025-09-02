@@ -21,7 +21,7 @@ permissions:
 jobs:
   trigger-workflow:
     # Only run on pull request comments
-    if: github.event.issue.pull_request
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/run')
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +35,7 @@ jobs:
           # Commands will be like /run workflow_name arg=value ...
           if ! command_lines=$(echo "$comment" | grep -E '^\s*/run'); then
             # If there are no command lines, exit
+            # (We should never be here because we checked for /run in the if condition)
             exit 0
           fi
           echo "Command lines: $command_lines"
