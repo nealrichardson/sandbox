@@ -28,7 +28,7 @@ jobs:
       - name: Check comment for trigger commands
         id: check-comment
         run: |
-          comment="${{ github.event.comment.body }}"
+          comment='${{ github.event.comment.body }}'
           echo "Comment: $comment"
 
           # Find all lines that start with /run (perhaps with leading spaces)
