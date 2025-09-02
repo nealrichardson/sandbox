@@ -20,22 +20,23 @@ permissions:
 
 jobs:
   trigger-workflow:
-    # Only run on pull request comments
+    # Only run on pull request comments that contain /run
     if: github.event.issue.pull_request && contains(github.event.comment.body, '/run')
     runs-on: ubuntu-latest
 
     steps:
       - name: Check comment for trigger commands
         id: check-comment
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          comment='${{ github.event.comment.body }}'
-          echo "Comment: $comment"
+          # Write comment to file to avoid shell injection issues
+          printf '%s\n' "$COMMENT_BODY" > comment_body.txt
 
           # Find all lines that start with /run (perhaps with leading spaces)
           # Commands will be like /run workflow_name arg=value ...
-          if ! command_lines=$(echo "$comment" | grep -E '^\s*/run'); then
+          if ! command_lines=$(grep -E '^\s*/run' comment_body.txt); then
             # If there are no command lines, exit
-            # (We should never be here because we checked for /run in the if condition)
             exit 0
           fi
           echo "Command lines: $command_lines"
