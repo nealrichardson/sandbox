@@ -21,7 +21,7 @@ permissions:
 jobs:
   trigger-workflow:
     # Only run on pull request comments that contain /run
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/run')
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/run ')
     runs-on: ubuntu-latest
 
     steps:
