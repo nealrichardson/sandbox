@@ -30,12 +30,10 @@ jobs:
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          # Write comment to file to avoid shell injection issues
-          printf '%s\n' "$COMMENT_BODY" > comment_body.txt
-
           # Find all lines that start with /run (perhaps with leading spaces)
           # Commands will be like /run workflow_name arg=value ...
-          if ! command_lines=$(grep -E '^\s*/run' comment_body.txt); then
+          # Use printf to safely handle the comment body
+          if ! command_lines=$(printf '%s' "$COMMENT_BODY" | grep -E '^\s*/run'); then
             # If there are no command lines, exit
             exit 0
           fi
