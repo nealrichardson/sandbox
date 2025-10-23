@@ -1,0 +1,24 @@
+name: PR Comment Workflow Triggers
+
+on:
+  pull_request:
+
+jobs:
+  artifacting:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: upload readme as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-file
+          path: README.md
+      
+      - name: download it to a different location
+        uses: actions/download-artifact@v5
+        with:
+          name: readme-file
+          path: ./downloaded
+      
+      - name: list files
+        run: ls -la ./downloaded
