@@ -1,10 +1,10 @@
 name: PR Comment Workflow Triggers
 
 on:
-  pull_request:
+  push:
 
 jobs:
-  artifacting:
+  testing:
     runs-on: ubuntu-latest
 
     steps:
