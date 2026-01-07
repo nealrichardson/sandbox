@@ -10,10 +10,33 @@ jobs:
     steps:
       - name: test mirrors
         run: |
-          MIRRORS=( "http://archive.ubuntu.com" "http://us-east-1.ec2.archive.ubuntu.com" )
-          for m in "${MIRRORS[@]}"; do
-            echo $m
-            for i in {1..10}; do
-              curl --max-time 5 --silent --output /dev/null --write-out %{time_total}\\n $m
+          set -e
+
+          RUNS=3
+
+          test_mirror() {
+            local name=$1
+            local mirror=$2
+
+            echo "=== $name ==="
+
+            # Set the mirror
+            sudo sed -i "s|http://[^/]*.ubuntu.com|$mirror|g" /etc/apt/sources.list
+
+            total=0
+            for i in $(seq 1 $RUNS); do
+              sudo rm -rf /var/lib/apt/lists/*
+              start=$(date +%s.%N)
+              sudo apt-get update -qq
+              end=$(date +%s.%N)
+              time_taken=$(echo "$end - $start" | bc)
+              echo "  Run $i: ${time_taken}s"
+              total=$(echo "$total + $time_taken" | bc)
             done
-          done
+            avg=$(echo "scale=2; $total / $RUNS" | bc)
+            echo "  Average: ${avg}s"
+            echo ""
+          }
+
+          test_mirror "Default (archive.ubuntu.com)" "http://archive.ubuntu.com"
+          test_mirror "EC2 mirror" "http://us-east-1.ec2.archive.ubuntu.com"
